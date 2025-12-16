@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Calculate Age With Kashif - OP Mode</title>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, sans-serif;}
+body{height:100vh;display:flex;justify-content:center;align-items:center;background:#000;overflow:hidden;transition:background 0.5s;}
+#particles-js{position:absolute;width:100%;height:100%;z-index:-1;}
+.container{width:400px;background:rgba(0,0,0,0.75);padding:25px;border-radius:15px;box-shadow:0 0 30px cyan;color:#fff;text-align:center;animation:fade 1s ease;}
+@keyframes fade{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+h1{color:#00ffff;text-shadow:0 0 15px cyan;animation:float 2s infinite alternate;margin-bottom:15px;}
+@keyframes float{from{transform:rotateX(0deg);}to{transform:rotateX(15deg);}}
+input,button,select{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;}
+input,select{background:#eee;}
+button{background:linear-gradient(45deg,cyan,blue);font-weight:bold;cursor:pointer;}
+button:hover{transform:scale(1.05);}
+.error{color:#ff4d4d;font-size:14px;}
+.details{margin-top:10px;color:#00ff99;font-size:14px;}
+.hidden{display:none;}
+.showpass{display:flex;align-items:center;gap:5px;font-size:13px;}
+.badge{display:inline-block;padding:5px 10px;margin:5px;border-radius:8px;background:#00ffff;color:#000;font-weight:bold;}
+#themeSelect{margin-top:10px;}
+#history{margin-top:10px;text-align:left;max-height:150px;overflow:auto;background:#111;padding:10px;border-radius:8px;color:#0f0;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<!-- SPLASH SCREEN -->
+<div class="container" id="splashScreen">
+    <h1>Calculate Age With Kashif</h1>
+    <p>Loading...✨</p>
+</div>
+
+<!-- SIGNUP PAGE -->
+<div class="container hidden" id="signupPage">
+    <h1>Signup</h1>
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="class" placeholder="Class">
+    <input type="text" id="roll" placeholder="Roll No">
+    <input type="password" id="password" placeholder="Password">
+    <div class="showpass">
+        <input type="checkbox" onclick="togglePass()"> Show Password
+    </div>
+    <p class="error" id="signupError"></p>
+    <button onclick="signup()">Signup</button>
+</div>
+
+<!-- CALCULATOR PAGE -->
+<div class="container hidden" id="calcPage">
+    <h1>Calculate Age With Kashif</h1>
+    <div class="details" id="userDetails"></div>
+    <select id="themeSelect" onchange="changeTheme()">
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="galaxy">Galaxy</option>
+    </select>
+    <input type="date" id="dob">
+    <p class="error" id="calcError"></p>
+    <button onclick="calculateAge()">Calculate Age</button>
+    <button onclick="goBack()">⬅ Back</button>
+    <div class="details" id="result"></div>
+    <div id="history"></div>
+</div>
+
+<script>
+// VOICE FUNCTION
+function speak(text){
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+    speech.rate = 1;
+    speech.pitch = 1;
+    window.speechSynthesis.speak(speech);
+}
+
+// PARTICLES
+particlesJS("particles-js",{
+particles:{number:{value:80},size:{value:3},move:{speed:2},line_linked:{enable:true},color:{value:"#00ffff"}}
+});
+
+const correctPassword="12345";
+let userName="", userClass="", userRoll="";
+
+function togglePass(){
+    let p=document.getElementById("password");
+    p.type = p.type==="password" ? "text" : "password";
+}
+
+// SPLASH SCREEN SIMULATION
+setTimeout(()=>{document.getElementById('splashScreen').classList.add('hidden');document.getElementById('signupPage').classList.remove('hidden');speak("Welcome to the AI World of Prince Kashi");},2000);
+
+function signup(){
+    let name=document.getElementById("name").value.trim();
+    let cls=document.getElementById("class").value.trim();
+    let roll=document.getElementById("roll").value.trim();
+    let pass=document.getElementById("password").value.trim();
+    let err=document.getElementById("signupError");
+
+    if(!name || !cls || !roll || !pass){
+        err.innerText="Please fill required fields";
+        return;
+    }
+    if(pass!==correctPassword){
+        err.innerText="Invalid Password";
+        return;
+    }
+
+    userName=name;
+    userClass=cls;
+    userRoll=roll;
+
+    err.innerText="";
+    document.getElementById("signupPage").classList.add("hidden");
+    document.getElementById("calcPage").classList.remove("hidden");
+
+    document.getElementById("userDetails").innerHTML=
+    `👤 Name: ${userName}<br>🏫 Class: ${userClass}<br>🆔 Roll No: ${userRoll}`;
+
+    loadHistory();
+}
+
+function calculateAge(){
+    let dob=document.getElementById("dob").value;
+    let err=document.getElementById("calcError");
+    let res=document.getElementById("result");
+
+    if(!dob){
+        err.innerText="Please select date of birth";
+        return;
+    }
+
+    err.innerText="";
+    let birth=new Date(dob);
+    let now=new Date();
+    let diff=now-birth;
+
+    let sec=Math.floor(diff/1000);
+    let min=Math.floor(sec/60);
+    let hrs=Math.floor(min/60);
+    let days=Math.floor(hrs/24);
+    let months=Math.floor(days/30.44);
+    let years=Math.floor(months/12);
+
+    let ageText = `✨ Hey ${userName}, you are 
+    ${years} years, 
+    ${months} months, 
+    ${days} days, 
+    ${min} minutes 
+    and ${sec} seconds old.`;
+
+    res.innerHTML = ageText;
+
+    // Age Badge
+    let badge="";
+    if(years<13) badge="👶 Child";
+    else if(years<20) badge="🧑 Teen";
+    else if(years<50) badge="👨 Adult";
+    else badge="👴 Senior";
+
+    res.innerHTML += `<br><span class="badge">${badge}</span>`;
+
+    // Voice
+    let voiceText = `Hey ${userName}, you are ${years} years, ${months} months, ${days} days, ${min} minutes and ${sec} seconds old.`;
+    speak(voiceText);
+
+    // Save to history
+    saveHistory(ageText + " - " + badge);
+}
+
+// THEME SWITCHER
+function changeTheme(){
+    let theme=document.getElementById("themeSelect").value;
+    if(theme=="dark") document.body.style.background="#000";
+    else if(theme=="neon") document.body.style.background="#0f0f0f";
+    else if(theme=="galaxy") document.body.style.background="radial-gradient(circle,#000,#0a0a2a,#001a4d)";
+}
+
+// LOCAL STORAGE HISTORY
+function saveHistory(entry){
+    let history=JSON.parse(localStorage.getItem("ageHistory")||"[]");
+    history.push(entry);
+    localStorage.setItem("ageHistory",JSON.stringify(history));
+    loadHistory();
+}
+
+function loadHistory(){
+    let history=JSON.parse(localStorage.getItem("ageHistory")||"[]");
+    let histDiv=document.getElementById("history");
+    histDiv.innerHTML="<b>History:</b><br>" + history.slice(-5).reverse().join("<br>");
+}
+
+function goBack(){
+    document.getElementById("calcPage").classList.add("hidden");
+    document.getElementById("signupPage").classList.remove("hidden");
+}
+</script>
+</body>
+</html>

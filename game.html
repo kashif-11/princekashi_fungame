@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prince Kashi Fun Game</title>
+<style>
+body {
+    font-family:'Segoe UI', sans-serif;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    height:100vh; margin:0; background: linear-gradient(135deg, #1f1c2c, #928dab); color:white;
+}
+h1 {text-align:center; text-shadow:0 0 10px cyan; animation:rotate3d 5s linear infinite;}
+@keyframes rotate3d {
+    0%{transform:rotateX(0deg) rotateY(0deg);}
+    50%{transform:rotateX(360deg) rotateY(360deg);}
+    100%{transform:rotateX(0deg) rotateY(0deg);}
+}
+button {
+    padding:10px 20px; margin:10px; border:none; border-radius:10px;
+    background:linear-gradient(45deg, cyan, magenta); color:white; cursor:pointer; font-weight:bold;
+    font-size:16px;
+}
+button:hover {transform:scale(1.1); transition:0.3s;}
+#result {margin-top:20px; font-size:18px; color:yellow; text-align:center;}
+#score {margin-top:10px; font-size:16px;}
+</style>
+</head>
+<body>
+<h1>Prince Kashi's Rock-Paper-Scissors</h1>
+<div>
+<button onclick="play('rock')">🪨 Rock</button>
+<button onclick="play('paper')">📄 Paper</button>
+<button onclick="play('scissors')">✂️ Scissors</button>
+</div>
+<div id="result"></div>
+<div id="score">Player: 0 | Computer: 0</div>
+
+<script>
+let playerScore = 0;
+let compScore = 0;
+
+function play(playerChoice){
+    const choices = ['rock','paper','scissors'];
+    const compChoice = choices[Math.floor(Math.random()*3)];
+    let result = '';
+
+    if(playerChoice === compChoice){
+        result = `Both chose ${playerChoice}. It's a tie!`;
+    } else if(
+        (playerChoice==='rock' && compChoice==='scissors') ||
+        (playerChoice==='paper' && compChoice==='rock') ||
+        (playerChoice==='scissors' && compChoice==='paper')
+    ){
+        result = `You chose ${playerChoice}, Computer chose ${compChoice}. You win! 🎉`;
+        playerScore++;
+    } else {
+        result = `You chose ${playerChoice}, Computer chose ${compChoice}. You lose! 😢`;
+        compScore++;
+    }
+
+    document.getElementById('result').innerText = result;
+    document.getElementById('score').innerText = `Player: ${playerScore} | Computer: ${compScore}`;
+}
+</script>
+</body>
+</html>
